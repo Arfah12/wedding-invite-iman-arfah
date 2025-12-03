@@ -11,184 +11,74 @@ body, html, #root, .app {
     width:100%; 
     height:100%; 
     overflow-x:hidden; 
-    background-color:#f8f4f4; /* Soft background */
+    background-color:#fefafa; /* Soft background */
 }
 
-/* --- METALLIC GOLD TEXT EFFECT --- */
+/* ===== METALLIC GOLD TEXT EFFECT ===== */
 .metallic-gold-text {
-    /* Gunakan font yang tebal/besar untuk hasil terbaik */
     font-weight: 700; 
     font-size: clamp(2rem, 5vw, 3rem); 
-    
-    /* Paling Penting: Kecerunan Latar Belakang */
     background: linear-gradient(
         180deg, 
-        #fbf5b7 0%, /* Sorotan terang */
+        #fbf5b7 0%, 
         #f4cb63 25%, 
-        #cca209 50%, /* Emas gelap (Bayangan) */
-        #f4cb63 75%,
-        #fbf5b7 100% /* Sorotan terang */
+        #e0b104 50%, 
+        #f4cb63 75%, 
+        #fbf5b7 100%
     );
-    
-    /* PENTING: Untuk teks */
-    -webkit-background-clip: text; /* Hanya klip latar belakang pada bentuk teks */
+    -webkit-background-clip: text;
     background-clip: text;
-    -webkit-text-fill-color: transparent; /* Jadikan warna teks telus */
-    
-    /* Tambah shadow emas yang halus */
-    text-shadow: 1px 1px 3px rgba(255, 223, 0, 0.4);
+    -webkit-text-fill-color: transparent;
+    text-shadow: 1px 1px 3px rgba(185, 162, 10, 0.4);
 }
 
-
-/* --- SHINY GOLD BUTTON/BOX EFFECT --- */
+/* ===== SHINY GOLD BUTTON/BOX EFFECT ===== */
 .shiny-gold-btn {
-    background-color: #D4AF37; /* Base Gold */
-    color: #9c7603; /* Teks coklat gelap untuk kontras */
+    background-color: #D4AF37;
+    color: #967103;
     border: 1px solid #FFD700;
-    
-    /* Kesan Timbul/3D */
     box-shadow: 
-        inset 0 1px 0 rgba(21, 20, 8, 0.5), /* Kilauan atas */
-        0 4px 6px rgba(0, 0, 0, 0.079), /* Bayangan bawah */
-        0 0 10px rgba(255, 223, 0, 0.6); /* Kilauan luar (Outer Glow) */
-        
+        inset 0 1px 0 rgba(21, 20, 8, 0.5),
+        0 4px 6px rgba(0, 0, 0, 0.079),
+        0 0 10px rgba(255, 223, 0, 0.6);
     transition: all 0.3s ease;
 }
-
 .shiny-gold-btn:hover {
     background-color: #E6C764;
     box-shadow: 
         inset 0 1px 0 rgba(255, 255, 255, 0.7),
         0 6px 12px rgba(0, 0, 0, 0.3),
-        0 0 15px rgba(255, 223, 0, 0.8); /* Kilauan lebih kuat */
+        0 0 15px rgba(255, 223, 0, 0.8);
 }
 
-
-/* ===== GENERAL SECTION STYLING (Scroll Reveal Base) ===== */
+/* ===== GENERAL SECTION STYLING ===== */
 .section {
-    padding: 80px 5%; /* Gunakan % untuk responsif */
+    padding: 80px 5%;
     text-align: center;
     color: #333;
     min-height: 250px;
-    
-    /* Gaya Awal untuk Scroll Reveal (Tersembunyi) */
     opacity: 0;
     transform: translateY(50px);
     transition: opacity 0.8s ease-out, transform 0.8s ease-out; 
 }
-
-/* ===== CLASSIC SECTION DIVIDER (Pembahagi Elegan Emas & Burgundy) ===== */
-.classic-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 90%;
-    max-width: 800px;
-    margin: 30px auto; /* Jarak atas dan bawah */
-    position: relative;
-    padding: 20px 0; 
-}
-
-/* Garisan Pembahagi (Latar Belakang) */
-.classic-divider::before,
-.classic-divider::after {
-    content: '';
-    flex-grow: 1; /* Biar garisan memanjang penuh */
-    height: 1px;
-    background-color: #D4AF37; /* Garisan Emas */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Sentuhan 3D/shadow */
-}
-
-/* Aksen Ikon di Tengah */
-.divider-icon {
-    font-size: 2rem; /* Saiz ikon */
-    margin: 0 20px;
-    color: #800020; /* Warna ikon (Deep Burgundy/Songket) */
-    /* Kesan bayangan halus untuk menonjolkan */
-    text-shadow: 1px 1px 2px rgba(212, 175, 55, 0.5); 
-}
-
-
-
-/* --- ANIMASI TEKS DI DALAM SEKSYEN ATURCARA MAJLIS (.section-time) --- */
-
-/* Gaya Awal: Tersembunyi di sebelah kiri */
-.section-time h2,
-.section-time p,
-.section-time div p {
-    opacity: 0;
-    /* Mulakan di sebelah kiri (luncur masuk dari kiri) */
-    transform: translateX(-50px); 
-    /* Durasi transisi lebih perlahan (contoh: 1s) */
-    transition: opacity 1s ease-out, transform 1s ease-out;
-}
-
-
-/* Apabila Seksyen Kelihatan: Luncurkan masuk secara berperingkat (Stagger) */
-
-/* 1. Tajuk (H2) */
-.section-time.is-visible h2 {
-    opacity: 1;
-    transform: translateX(0);
-    transition-delay: 0.2s; 
-}
-
-/* 2. Lokasi (P) */
-.section-time.is-visible p:nth-child(2) { /* P selepas h2 */
-    opacity: 1;
-    transform: translateX(0);
-    transition-delay: 0.5s; 
-}
-
-/* 3. Butiran Aturcara (Di dalam div) */
-.section-time div p {
-    /* Guna transform asas yang sama */
-    transform: translateX(-50px); 
-}
-
-/* Teks dalam div: Animasi bertingkat */
-/* Tajuk Majlis Resepsi (P pertama dalam div) */
-.section-time.is-visible div p:nth-child(1) { 
-    opacity: 1;
-    transform: translateX(0);
-    transition-delay: 0.8s; 
-}
-/* Ketibaan Tetamu (P ke-2 dalam div) */
-.section-time.is-visible div p:nth-child(2) { 
-    opacity: 1;
-    transform: translateX(0);
-    transition-delay: 1.1s; 
-}
-/* Perarakan Masuk Pengantin (P ke-3 dalam div) */
-.section-time.is-visible div p:nth-child(3) { 
-    opacity: 1;
-    transform: translateX(0);
-    transition-delay: 1.4s; 
-}
-/* Jamuan Makan Tengah Hari (P ke-4 dalam div) */
-.section-time.is-visible div p:nth-child(4) { 
-    opacity: 1;
-    transform: translateX(0);
-    transition-delay: 1.7s; 
-}
-/* Majlis Berakhir (P ke-5 dalam div) */
-.section-time.is-visible div p:nth-child(5) { 
-    opacity: 1;
-    transform: translateX(0);
-    transition-delay: 2.0s; 
-}
-/* Gaya Apabila Muncul (is-visible ditambah oleh JavaScript) */
 .section.is-visible {
     opacity: 1;
     transform: translateY(0);
 }
-
 .section h2 { 
     font-family:'Great Vibes', cursive;
     font-size: clamp(2.5rem, 8vw, 4rem); 
-    color: #800020; /* Deep Burgundy */
+    color: #800020;
     margin-bottom: 30px;
     position: relative;
+}
+.section h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background-color: #D4AF37;
+    margin: 10px auto 0;
 }
 .section p {
     font-size: 1.1rem;
@@ -196,17 +86,83 @@ body, html, #root, .app {
     margin: 0 auto 20px auto;
     line-height: 1.6;
 }
-/* Divider under headings */
-.section h2::after {
+
+/* ===== CLASSIC SECTION DIVIDER ===== */
+.classic-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    max-width: 800px;
+    margin: 30px auto;
+    position: relative;
+    padding: 20px 0; 
+}
+.classic-divider::before,
+.classic-divider::after {
     content: '';
-    display: block;
-    width: 60px;
-    height: 3px;
-    background-color: #D4AF37; /* Gold Accent */
-    margin: 10px auto 0;
+    flex-grow: 1;
+    height: 1px;
+    background-color: #D4AF37;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.divider-icon {
+    font-size: 2rem;
+    margin: 0 20px;
+    color: #800020;
+    text-shadow: 1px 1px 2px rgba(212, 175, 55, 0.5); 
 }
 
-/* ===== WELCOME SCREEN (Improved & Animated) ===== */
+/* ===== SECTION TIME ANIMATION ===== */
+.section-time h2,
+.section-time p,
+.section-time div p {
+    opacity: 0;
+    transform: translateX(-50px); 
+    transition: opacity 1s ease-out, transform 1s ease-out;
+}
+.section-time.is-visible h2 {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 0.2s; 
+}
+.section-time.is-visible p:nth-child(2) { 
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 0.5s; 
+}
+.section-time div p:nth-child(1) { 
+    opacity: 0;
+    transform: translateX(-50px);
+}
+.section-time.is-visible div p:nth-child(1) { 
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 0.8s; 
+}
+.section-time.is-visible div p:nth-child(2) { 
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 1.1s; 
+}
+.section-time.is-visible div p:nth-child(3) { 
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 1.4s; 
+}
+.section-time.is-visible div p:nth-child(4) { 
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 1.7s; 
+}
+.section-time.is-visible div p:nth-child(5) { 
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 2.0s; 
+}
+
+
+/* ===== WELCOME SCREEN ===== */
 .welcome-screen {
     position: fixed; top:0; left:0; width:100%; height:100%;
     display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;
@@ -215,41 +171,27 @@ body, html, #root, .app {
     background-position:center;
     background-size:cover;
 }
-/* Elegant Overlay */
 .welcome-screen::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgba(0, 0, 0, 0.3); /* Dark overlay for better text visibility */
+    background-color: rgba(0, 0, 0, 0.3);
     z-index: 1;
 }
 .welcome-screen h1, .welcome-screen p, .welcome-screen button, .welcome-screen .welcome-tagline { 
     position: relative;
     z-index: 2;
-}
-
-/* === Teks Welcome Screen & Animasi === */
-.welcome-screen .welcome-tagline, 
-.welcome-screen h1, 
-.welcome-screen p, 
-.welcome-screen button { 
-    opacity: 0; 
+    opacity: 0;
     animation: fadeIn 1.5s ease-out forwards;
 }
-
-/* Walimatulurus Tagline */
-.welcome-screen .welcome-tagline {
+.welcome-screen .welcome-tagline { 
     font-family:'Great Vibes', cursive; 
     font-size: clamp(2.5rem, 8vw, 4rem); 
     margin-bottom: 5px; 
     color: #fff; 
     text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
-    display: block; 
-    font-weight: 400;
     animation-delay: 0.5s;
 }
-
-/* Nama H1 */
 .welcome-screen h1 { 
     font-family:'Great Vibes', cursive; 
     font-size: clamp(4rem, 15vw, 7rem); 
@@ -259,8 +201,6 @@ body, html, #root, .app {
     line-height: 1; 
     animation-delay: 1s;
 }
-
-/* Tarikh P */
 .welcome-screen p { 
     font-size: clamp(1.1rem, 3vw, 1.8rem); 
     margin-bottom:40px; 
@@ -269,8 +209,6 @@ body, html, #root, .app {
     text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
     animation-delay: 1.5s;
 }
-
-/* Butang */
 .welcome-screen button { 
     padding:15px 35px; 
     font-size:1.2rem; 
@@ -283,531 +221,236 @@ body, html, #root, .app {
     cursor:pointer; 
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    /* Animasi Fade dan Pulse */
     animation: fadeIn 1.5s ease-out 2s forwards, pulse 2s infinite 3.5s; 
 }
 .welcome-screen button:hover { 
     background:#A52A2A; 
     box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
-
-/* Keyframes Welcome Screen (Dikekalkan) */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px); 
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 @keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); 
-    }
-    70% {
-        box-shadow: 0 0 0 15px rgba(212, 175, 55, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
-    }
+    0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
 }
 
-/* --- GAYA ASAS: GUNA TRANSFORM SCALE (ZOOM-IN) --- */
+/* ===== SECTION JEMPUTAN ===== */
 .section-jemputan h2,
 .section-jemputan p {
     opacity: 0;
-    /* Guna SCALE SANGAT KECIL (Hampir tidak kelihatan) */
     transform: scale(0.8); 
-    transition: opacity 1s ease-out, transform 1s ease-out; /* Durasi lebih perlahan */
+    transition: opacity 1s ease-out, transform 1s ease-out;
 }
+.section-jemputan.is-visible h2 { opacity:1; transform:scale(1); transition-delay:0.2s; }
+.section-jemputan.is-visible p:nth-child(2) { opacity:1; transform:scale(1); transition-delay:0.8s; }
 
-/* --- DELAY BERTINGKAT (Staggering) --- */
-
-/* A. Animasi untuk Heading (Tajuk) */
-.section-jemputan.is-visible h2 {
-    opacity: 1;
-    /* Kembali ke saiz normal (1) */
-    transform: scale(1); 
-    transition-delay: 0.2s; 
-}
-
-/* B. Animasi untuk Perenggan Pertama */
-.section-jemputan.is-visible p:nth-child(2) { 
-    opacity: 1;
-    transform: scale(1); 
-    transition-delay: 0.8s; 
-}
-/* ===== SECTION BACKGROUNDS & OVERLAY (Seksyen Jemputan Khas) ===== */
+/* ===== SECTION BACKGROUNDS & OVERLAY ===== */
 .section-bg-overlay {
-    /* 1. TETAPKAN IMEJ Latar Belakang */
-    background-image: url('./assets/wallpaper.png'); /* <--- PASTIKAN NAMA FAIL BETUL */
+    background-image: url('./assets/wallpaper.png');
     background-repeat: no-repeat;
     background-position: center top;
     background-size: cover; 
-    
     color: #fff;
     position: relative;
     overflow: hidden;
-
-    /* Pastikan padding ditetapkan di sini juga, walaupun ia ada di .section */
     padding: 80px 5%;
 }
-
-/* 2. TAMBAH LAPISAN GELAP (OVERLAY) */
-/* Kami akan menggunakan pseudo-element ::before untuk membuat lapisan gelap */
 .section-bg-overlay::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    /* Guna latar belakang warna Deep Burgundy atau Hitam dengan ketelusan rendah */
-    background-color: rgba(128, 0, 32, 0.6); /* Deep Burgundy #800020 dengan ketelusan 60% */
-    z-index: 1; /* Penting: Diletakkan di atas imej latar belakang */
+    background-color: rgba(128, 0, 32, 0.6);
+    z-index: 1;
 }
-
-/* 3. PASTIKAN TEKS BERADA DI ATAS OVERLAY */
 .section-bg-overlay h2, 
 .section-bg-overlay p, 
-.section-bg-overlay .content-container { /* Tambah kelas yang memuatkan kandungan teks */
-    position: relative;
-    z-index: 2; /* Teks mesti lebih tinggi daripada overlay (z-index: 1) */
-}
+.section-bg-overlay .content-container { position: relative; z-index: 2; }
+.section-bg-overlay h2 { color: #D4AF37; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
 
-.section-bg-overlay h2 {
-    color: #D4AF37; /* Pastikan tajuk emas kekal */
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-}
+.section-time.is-visible p:nth-child(2) { opacity: 1; transform: translateX(0); transition-delay: 0.5s; }
+.section-time.is-visible p:nth-child(3) { opacity: 1; transform: translateX(0); transition-delay: 0.7s; }
+.section-time.is-visible p:nth-child(4) { opacity: 1; transform: translateX(0); transition-delay: 0.9s; }
+.section-time.is-visible p:nth-child(5) { opacity: 1; transform: translateX(0); transition-delay: 1.1s; }
+.section-time.is-visible p:nth-child(6) { opacity: 1; transform: translateX(0); transition-delay: 1.3s; }
 
+/* ===== SECTION DOA ===== */
+.section-doa .slow-fade-text { opacity:0; transition:opacity 3s ease-in-out; margin:20px auto; font-size:clamp(1.1rem,3vw,1.4rem); font-weight:400; max-width:90%; }
+.section-doa .slow-fade-text:nth-of-type(2) { transition-delay:1s; }
+.section-doa.is-visible .slow-fade-text { opacity:1; }
 
-/* ===== SLOW FADE ANIMATION (Gantikan Typewriter) ===== */
+/* ===== AYAT AL-QURAN ===== */
+.section-ayat { background-color:#f4f4f4; padding:40px 5px; }
+.arabic-text { font-family: 'Times New Roman', serif; font-size: clamp(1.5rem, 5vw, 2.8rem); margin-bottom:10px !important; font-weight:bold; color:#800020; }
+.malay-text { font-style: italic; font-size:1rem; color:#555; }
+.section-ayat .arabic-text, .section-ayat .malay-text { opacity:0; transform:translateY(20px); transition:opacity 1s ease-out 0.5s, transform 1s ease-out 0.5s; }
+.section-ayat.is-visible .arabic-text, .section-ayat.is-visible .malay-text { opacity:1; transform:translateY(0); }
 
-/* Gaya Awal untuk Teks Doa */
-.section-doa .slow-fade-text {
-    opacity: 0; /* Awalnya tersembunyi */
-    /* Guna 'transition' untuk transisi lembut dan perlahan */
-    transition: opacity 3s ease-in-out; 
-    margin: 20px auto;
-    font-size: clamp(1.1rem, 3vw, 1.4rem);
-    font-weight: 400;
-    max-width: 90%;
-}
-
-/* Ciri CSS Tambahan untuk Doa Nabi (Perenggan ke-2) */
-.section-doa .slow-fade-text:nth-of-type(2) {
-    transition-delay: 1s; /* Biar baris kedua muncul lebih lambat sedikit */
-}
-
-/* Mendedahkan Teks Apabila Seksyen Kelihatan (Triggered oleh JS is-visible) */
-.section-doa.is-visible .slow-fade-text {
-    opacity: 1;
-}
-
-/* ===== AYAT AL-QURAN STYLING (Seksyen terakhir) ===== */
-.section-ayat {
-    background-color: #f4f4f4; /* Kontras dengan seksyen doa */
-    padding-top: 40px;
-    padding-bottom: 40px;
-}
-.arabic-text {
-    font-family: 'Times New Roman', serif; 
-    font-size: clamp(1.5rem, 5vw, 2.8rem);
-    margin-bottom: 10px !important;
-    font-weight: bold;
-    color: #800020;
-}
-.malay-text {
-    font-style: italic;
-    font-size: 1rem;
-    color: #555;
-}
-
-/* Animasi Fade-In untuk Teks Ayat Al-Quran */
-.section-ayat .arabic-text,
-.section-ayat .malay-text {
-    opacity: 0;
-    transform: translateY(20px);
-    /* Sedikit delay agar ia muncul selepas doa */
-    transition: opacity 1s ease-out 0.5s, transform 1s ease-out 0.5s; 
-}
-
-/* Mendedahkan Teks Ayat Apabila Seksyen Kelihatan */
-.section-ayat.is-visible .arabic-text,
-.section-ayat.is-visible .malay-text {
-    opacity: 1;
-    transform: translateY(0);
-}
+/* ===== GUESTBOOK ===== */
+.section-ucapan { background-color:#fcfcfc; }
+.guestbook-container { margin-top:30px; max-width:1000px; margin-left:auto; margin-right:auto; }
+.btn-open-form { padding:14px 30px; border:none; border-radius:5px; background:#D4AF37; color:#000; font-weight:600; font-size:1.1rem; cursor:pointer; margin-bottom:20px; transition:all 0.3s ease; box-shadow:0 4px 10px rgba(0,0,0,0.15); }
+.btn-open-form:hover { background:#c29b28; box-shadow:0 6px 15px rgba(0,0,0,0.2); }
+.guestbook-slider { display:flex; overflow-x:scroll; gap:20px; margin-top:20px; padding-bottom:15px; -webkit-overflow-scrolling:touch; scroll-behavior:smooth; }
+.guestbook-card { min-width:280px; max-width:320px; background:#fffff8; padding:25px; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.1),0 0 0 1px #d3d3d3; border-left:5px solid #D4AF37; background-image:url('./assets/vintage-flower-accent.png'); background-repeat:no-repeat; background-position:left 10px bottom 10px; background-size:50px auto; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.guestbook-card:hover { transform:translateY(-2px); box-shadow:0 5px 10px rgba(0,0,0,0.15),0 0 0 1px #d3d3d3; }
+.guestbook-message { font-family: Georgia, 'Times New Roman', Times, serif; font-size:1rem; line-height:1.5; margin-bottom:15px; font-style:italic; color:#444; }
+.guestbook-author { font-size:0.95rem; text-align:right; color:#800020; font-weight:700; border-top:1px dashed #eee; padding-top:10px; }
+.guestbook-form-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center; z-index:10000; }
+.guestbook-form { background:#fff; padding:40px; border-radius:10px; max-width:450px; width:90%; box-shadow:0 10px 30px rgba(0,0,0,0.5); }
+.guestbook-form input, .guestbook-form textarea { padding:12px; border-radius:3px; border:1px solid #ccc; width:100%; font-size:1rem; }
+.guestbook-form button { padding:14px; border-radius:5px; border:none; background:#800020; color:#fff; font-weight:600; cursor:pointer; transition:0.3s; }
+.guestbook-form button:hover { background:#A52A2A; }
 
 
-/* ===== GUESTBOOK & FORM STYLING (Kesan Kertas Klasik) ===== */
-.section-ucapan {
-    background-color: #fcfcfc; /* Kekalkan latar belakang seksyen cerah */
-}
-
-.guestbook-container { 
-    margin-top:30px; 
-    max-width: 1000px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* --- BUTANG UTAMA UCAPAN (Dikekalkan) --- */
-.btn-open-form { 
-    padding:14px 30px; 
-    border: none;
-    border-radius:5px; 
-    background:#D4AF37; 
-    color:#000000; 
-    font-weight: 600;
-    font-size: 1.1rem;
-    letter-spacing: 0.5px;
-    cursor:pointer; 
-    margin-bottom:20px; 
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
-}
-.btn-open-form:hover { 
-    background:#c29b28; 
-    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-}
-
-/* --- KAD SLIDER UCAPAN (ILUSI KERTAS KREM) --- */
-.guestbook-slider { 
-    display:flex; 
-    overflow-x:scroll; 
-    gap:20px; 
-    margin-top:20px; 
-    padding-bottom: 15px; 
-    -webkit-overflow-scrolling: touch; 
-}
-
-/* --- KAD SLIDER UCAPAN (ILUSI KERTAS KREM + BUNGA VINTAGE) --- */
-.guestbook-card { 
-    min-width:280px; 
-    max-width: 320px;
-    
-    /* Warna Kertas Lama (Krem/Putih Tulang) */
-    background:#fffff8; 
-    
-    padding:25px; 
-    border-radius: 5px; 
-    
-    /* Ilusi Kertas Timbul */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1), 0 0 0 1px #d3d3d3; 
-    
-    /* GAYA KLASIK: Garisan Border Emas (Dikekalkan) */
-    border-left: 5px solid #D4AF37; 
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    
-    /* --- TAMBAHAN BUNGA VINTAGE --- */
-    background-image: url('./assets/vintage-flower-accent.png'); /* Gantikan dengan lokasi fail anda */
-    background-repeat: no-repeat;
-    background-position: left 10px bottom 10px; /* Letak di sudut kanan atas */
-    background-size: 50px auto; /* Saiz kecil, 50px lebar */
-    /* ------------------------------ */
-}
-
-.guestbook-card:hover { 
-    transform: translateY(-2px); 
-    box-shadow: 0 5px 10px rgba(0,0,0,0.15), 0 0 0 1px #d3d3d3;
-}
-
-.guestbook-card:hover { 
-    transform: translateY(-2px); 
-    box-shadow: 0 5px 10px rgba(0,0,0,0.15), 0 0 0 1px #d3d3d3;
-}
-
-/* --- KANDUNGAN KAD (Dikekalkan untuk gaya klasik) --- */
-.guestbook-message { 
-    font-family: Georgia, 'Times New Roman', Times, serif; 
-    font-size:1rem; 
-    line-height: 1.5;
-    margin-bottom:15px; 
-    font-style: italic;
-    color: #444; 
-}
-.guestbook-author { 
-    font-size:0.95rem; 
-    text-align:right; 
-    color:#800020; 
-    font-weight: 700; 
-    border-top: 1px dashed #eee; 
-    padding-top: 10px;
-}
-
-/* --- FORM OVERLAY & INPUTS (Dikekalkan) --- */
-.guestbook-form-overlay { 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    background: rgba(0, 0, 0, 0.8); 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    z-index: 10000; 
-}
-.guestbook-form { 
-    background:#fff; 
-    padding:40px; 
-    border-radius:10px; 
-    max-width:450px; 
-    width:90%; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-}
-.guestbook-form input, .guestbook-form textarea { 
-    padding:12px; 
-    border-radius: 3px; 
-    border:1px solid #ccc; 
-    width:100%; 
-    font-size:1rem; 
-}
-.guestbook-form button { 
-    padding:14px; 
-    border-radius: 5px; 
-    border:none; 
-    background:#800020; 
-    color:#fff; 
-    font-weight: 600;
-    cursor:pointer; 
-    transition:0.3s; 
-}
-.guestbook-form button:hover { 
-    background:#A52A2A; 
-}
-/* Dalam seksyen GUESTBOOK & FORM STYLING */
-
-.guestbook-slider { 
-    display:flex; 
-    overflow-x:scroll; 
-    gap:20px; 
-    margin-top:20px; 
-    padding-bottom: 15px; 
-    -webkit-overflow-scrolling: touch; 
-    
-    /* --- TAMBAHAN PENTING UNTUK SMOOTH SCROLL --- */
-    scroll-behavior: smooth; 
-    /* ------------------------------------------- */
-}
-/* ===== MUSIC BUTTON ===== */
-.btn-music { 
-    position:fixed; 
-    bottom:30px; 
-    right:30px; 
-    padding:15px; 
-    width: 50px;
-    height: 50px;
-    border-radius:50%; 
-    border:none; 
-    background:#D4AF37; 
-    color:#800020; 
-    font-weight:bold; 
-    cursor:pointer; 
-    z-index:999; 
-    transition:0.3s; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+.contact-item {
     display: flex;
-    justify-content: center;
     align-items: center;
-    font-size: 1.2rem;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    color: #000;
 }
+
+.contact-item a {
+    text-decoration: none;
+    color: #000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.contact-item a:hover {
+    color: #25D366; /* hijau WhatsApp */
+}
+.contact-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.contact-label {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    color: #800020; /* ikut tema kad */
+}
+
+/* ===== MUSIC BUTTON ===== */
+.btn-music { position:fixed; bottom:30px; right:30px; padding:15px; width:50px; height:50px; border-radius:50%; border:none; background:#D4AF37; color:#800020; font-weight:bold; cursor:pointer; z-index:999; transition:0.3s; box-shadow:0 4px 10px rgba(0,0,0,0.3); display:flex; justify-content:center; align-items:center; font-size:1.2rem; }
 .btn-music:hover { background:#E6C764; }
 
-/* ===== FLOATING ACTION BUTTON MENU (FAB MENU) - FINAL FORMAL LOOKS ===== */
-/* ===== FLOATING ACTION BUTTON MENU (FAB MENU) - KOD PEMBETULAN FINAL ===== */
 
-/* Kontainer Utama Menu */
+.section-time p.address {
+    font-style: italic;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* ===== FAB MENU ===== */
 .fab-menu-container {
     position: fixed;
-    bottom: 30px; 
-    right: 30px;
-    z-index: 1000;
+    bottom: -170px;      /* Main button bawah */
+    right: 20px;
     display: flex;
-    flex-direction: row-reverse; 
-    align-items: flex-end;
-    gap: 15px; 
+    flex-direction: column-reverse; /* Main button bawah */
+    align-items: center; /* Center semua button */
+    gap: 12px;
+    z-index: 1000;
 }
 
-/* Butang Utama (Sentiasa Kelihatan) */
 .fab-main-button {
-    width: 55px;
-    height: 55px;
+    width: 50px;          /* kecil sikit */
+    height: 50px;         /* sama dengan width supaya bulat */
     border-radius: 50%;
     border: none;
-    background: #000000; /* Hitam Penuh untuk formal */
-    color: #fff; /* Ikon putih */
-    font-size: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    background-color: #430000; /* hitam gelap / burgundy */
+    color: #fff;
+    font-size: 20px;      /* icon ikut saiz bulatan */
     cursor: pointer;
-    transition: transform 0.3s ease, background 0.3s ease;
-    
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-}
-.fab-main-button:hover {
-    transform: rotate(90deg);
-    background: #333333;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* icon center */
+    z-index: 10;
 }
 
-/* BUTANG AKSI KECIL (Monokrom + Aksen Emas) */
+
 .fab-action-button {
-    width: 55px;
-    height: 55px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    
-    background-color: #ffffff; 
-    color: #000000; 
-    border: 1px solid #cccccc; 
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    text-decoration: none;
-    font-size: 1.3rem; 
+    border: none;
+    background-color: #fff; /* putih */
+    color: #000; /* hitam */
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* icon center */
     cursor: pointer;
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out, background-color 0.3s ease;
-
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-
-    /* Gaya Animasi Asas (Butang tersembunyi/ke kanan dari pandangan) */
-    opacity: 0;
-    pointer-events: none; 
-    transform: translateX(100%); 
-    position: absolute; 
-}
-
-/* Mendedahkan Butang Aksi - Anjakan Asas (Transform: translateX(0) TIDAK diperlukan di sini) */
-.fab-menu-container.open .fab-action-button {
-    opacity: 1;
-    pointer-events: auto; 
-    /* Kami akan menetapkan kedudukan mutlak (right: X) di bawah */
-}
-
-/* --- GAYA WARNA & KEDUDUKAN BUTANG AKSI (Pembetulan right: X) --- */
-/* Kiraan Desktop (55px butang + 15px gap) * N butang + 30px offset = right: X */
-
-.contact-btn { 
-    right: 240px; /* Butang ke-4: (55+15)*3 + 30 = 240px. KINI KELUAR */
-    border-color: #D4AF37; 
-    transition-delay: 0.4s;
-    z-index: 1001; 
-    transform: translateX(0); /* Tetapkan kedudukan butang 📞 ke sifar */
-}
-
-.location-btn { 
-    right: 170px; /* Butang ke-3: (55+15)*2 + 30 = 170px */
-    border-color: #D4AF37; 
-    transition-delay: 0.3s;
-    transform: translateX(0);
-} 
-.gift-btn { 
-    right: 100px; /* Butang ke-2: (55+15)*1 + 30 = 100px */
-    border-color: #D4AF37; 
-    transition-delay: 0.2s;
-    transform: translateX(0);
-} 
-.music-btn { 
-    right: 30px; /* Butang ke-1: (55+15)*0 + 30 = 30px */
-    border-color: #000000; 
-    transition-delay: 0.1s;
-    transform: translateX(0);
-}
-
-/* Kesan Hover pada Butang Aksi */
-.fab-action-button:hover {
-    background-color: #f0f0f0; 
-    transform: scale(1.05);
-}
-
-
-/* --- GAYA BUTANG CONTACT BERGANDA (Butang Anak) --- */
-
-.contact-male-btn, .contact-female-btn {
     opacity: 0;
     pointer-events: none;
-    transform: translateX(100%);
-    
-    background-color: #fffff8; 
-    color: #000000;
-    border: 1px solid #D4AF37; 
-    
-    /* Tetapkan Kedudukan Asal Sama dengan .contact-btn */
-    right: 240px; 
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* 1. Butang Lelaki (Anjak ke kiri dari 📞) */
-.contact-male-btn.show-choice {
-    opacity: 1;
-    pointer-events: auto;
-    /* Anjakan 65px ke kiri */
-    transform: translateX(-65px); 
-    transition-delay: 0.1s;
+/* Semua action button muncul bila menu terbuka */
+.fab-menu-container.open .music-btn { transform: translateY(-320px); opacity:1; pointer-events:auto; }
+.fab-menu-container.open .location-btn { transform: translateY(-190px); opacity:1; pointer-events:auto; }
+.fab-menu-container.open .contact-btn { transform: translateY(-260px); opacity:1; pointer-events:auto; }
+
+.fab-action-button:hover {
+    background-color: #000;
+    color: #fff;
 }
-
-/* 2. Butang Perempuan (Anjak ke kiri dari 🤵) */
-.contact-female-btn.show-choice {
-    opacity: 1;
-    pointer-events: auto;
-    /* Anjakan 130px ke kiri */
-    transform: translateX(-130px); 
-    transition-delay: 0.2s;
-}
-
-
-/* ===== PENYESUAIAN MUDAH ALIH (MOBILE RESPONSIVE) ===== */
-@media (max-width: 600px) {
-    /* Butang Utama */
-    .fab-main-button {
-        width: 50px;
-        height: 50px;
-        font-size: 1.3rem;
-    }
-    /* Butang Aksi */
-    .fab-action-button {
-        width: 50px;
-        height: 50px;
-        font-size: 1.2rem;
-    }
-    
-    /* Susunan Semula Mobile (50px butang + 15px gap) * N butang + 15px offset */
-    .fab-menu-container {
-        right: 15px; 
-    }
-    
-    /* KEDUDUKAN BUTANG INDUK */
-    .fab-menu-container.open .music-btn { right: 55px; } /* Butang ke-1 */
-    .fab-menu-container.open .gift-btn { right: 110px; } /* Butang ke-2 */
-    .fab-menu-container.open .location-btn { right: 165px; } /* Butang ke-3 */
-    .fab-menu-container.open .contact-btn { right: 225px; } /* Butang ke-4 */
-    
-    /* GAYA BUTANG CONTACT BERGANDA MOBILE */
-    .contact-male-btn, .contact-female-btn {
-        right: 275px; /* Sama dengan .contact-btn Mobile */
-    }
-    
-    /* Anjakan Mobile (butang 50px + gap 5px) = 55px */
-    .contact-male-btn.show-choice {
-        transform: translateX(-12px); 
-    }
-    .contact-female-btn.show-choice {
-        transform: translateX(-70px); 
-    }
-    /* ===== FOOTER STYLING (Untuk Hashtag) ===== */
-.app-footer {
-    padding: 20px 5%;
-    background-color: #333; /* Latar belakang gelap (Hitam/Kelabu Gelap) */
-    color: #fff; /* Teks putih */
+.section-countdown {
     text-align: center;
-    font-size: 0.9rem;
-    font-weight: 300;
-    letter-spacing: 1px;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    padding: 2rem 1rem;
+    background: rgba(255, 255, 255, 0);
+    border-radius: 12px;
+    margin: 2rem auto;
+    max-width: 600px;
 }
 
-.app-footer p {
-    margin: 0;
-    color: #D4AF37; /* Jadikan hashtag dan nama berwarna Emas */
+.section-countdown h2 {
+    color: #b8860b; /* gold */
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
 }
+
+.countdown-cards {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
 }
+
+.countdown-card {
+    background-color: #fff;
+    border: 2px solid #b8860b;
+    border-radius: 10px;
+    padding: 15px 20px;
+    min-width: 80px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.countdown-card span {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #b8860b;
+}
+
+.countdown-card small {
+    display: block;
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 5px;
+}
+
+
+/* ===== FOOTER ===== */
+.app-footer { padding:20px 5%; background-color:#333; color:#fff; text-align:center; font-size:0.9rem; font-weight:300; letter-spacing:1px; box-shadow:0 -2px 10px rgba(0,0,0,0.1); }
+.app-footer p { margin:0; color:#D4AF37; }

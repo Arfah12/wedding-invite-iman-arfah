@@ -2,352 +2,360 @@ import React, { useState, useRef, useEffect } from "react";
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "firebase/firestore";
 import "./App.css";
-// NOTE: Make sure the 'wallpaper' image is subtle enough not to clash with text!
-import wallpaper from "./assets/wallpaper.png"; 
+import wallpaper from "./assets/wallpaper.png";
 
-// Firebase Config (Keep this as is)
+// =================== FIREBASE CONFIG ===================
 const firebaseConfig = {
     apiKey: "AIzaSyCMllnEAzc8Cc3WqUBrg3IeKcKjS_BFNh4",
     authDomain: "wedding-card-65c68.firebaseapp.com",
     projectId: "wedding-card-65c68",
-    storageBucket: "wedding-card-65c68.firebasestorage.app",
+    storageBucket: "wedding-card-65c68.appspot.com",
     messagingSenderId: "820287179156",
     appId: "1:820287179156:web:0428b8e57202421792e781"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ===== Guestbook Component (Dikekalkan) =====
-// ===== Guestbook Component (DENGAN AUTOPLAY) =====
+// =================== GUESTBOOK ===================
 function Guestbook() {
-    const sliderRef = useRef(null); // Ref untuk mengakses DOM slider
+    const sliderRef = useRef(null);
     const [name, setName] = useState("");
     const [wish, setWish] = useState("");
-    const [list, setList] = useState([]); // Senarai ucapan dari Firebase
+    const [list, setList] = useState([]);
     const [showForm, setShowForm] = useState(false);
-    
-    // State untuk mengawal indeks autoplay
-    const [activeIndex, setActiveIndex] = useState(0); 
-    
-    // --- 1. AMBIL DATA DARI FIREBASE (Dikekalkan) ---
-    React.useEffect(() => {
-        // Order by 'desc' (terbaru dahulu), yang bagus untuk Guestbook
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    // Listen to Firestore
+    useEffect(() => {
         const q = query(collection(db, "wishes"), orderBy("timestamp", "desc"));
-        const unsub = onSnapshot(q, snap => setList(snap.docs.map(d => ({ 
-            id: d.id, 
-            ...d.data(),
-            name: d.data().name || 'Anonymous',
-            wish: d.data().wish || 'No message provided'
-        }))));
+        const unsub = onSnapshot(q, snapshot => {
+            setList(snapshot.docs.map(d => ({
+                id: d.id,
+                name: d.data().name || "Anonymous",
+                wish: d.data().wish || "No message provided"
+            })));
+        });
         return () => unsub();
     }, []);
 
-    // --- 2. LOGIK AUTOPLAY / AUTOSCROLL ---
+    // Slider autoplay
     useEffect(() => {
-        // Pastikan ada ucapan dalam senarai sebelum cuba autoplay
-        if (list.length === 0) return; 
-
+        if (!list.length) return;
         const interval = setInterval(() => {
-            // Logik untuk mengira indeks seterusnya
-            const nextIndex = (activeIndex + 1) % list.length;
-            setActiveIndex(nextIndex);
-            
-            // Logik untuk menatal secara automatik
-            if (sliderRef.current) {
-                // Lebar kad: 280px (min-width) + 20px (gap) = 300px
-                const cardWidth = 300; 
-                sliderRef.current.scrollLeft = nextIndex * cardWidth;
-            }
-        }, 5000); // Bergerak setiap 5 saat
-
+            setActiveIndex(prev => {
+                const next = (prev + 1) % list.length;
+                if (sliderRef.current) sliderRef.current.scrollLeft = next * 300;
+                return next;
+            });
+        }, 5000);
         return () => clearInterval(interval);
-    }, [activeIndex, list.length]); // Dependencies: activeIndex dan saiz senarai
+    }, [list]);
 
-    // --- 3. LOGIK HANTAR UCAPAN (Dikekalkan) ---
     const sendWish = async e => {
         e.preventDefault();
-        if (!name.trim() || !wish.trim()) return; 
-        
-        await addDoc(collection(db, "wishes"), { 
-            name: name.trim(), 
-            wish: wish.trim(), 
-            timestamp: serverTimestamp() 
+        if (!name.trim() || !wish.trim()) return;
+        await addDoc(collection(db, "wishes"), {
+            name: name.trim(),
+            wish: wish.trim(),
+            timestamp: serverTimestamp()
         });
-        setName(""); setWish(""); setShowForm(false);
-        // Tetapkan activeIndex kembali ke 0 supaya ucapan baru (yang berada di hadapan) dapat dilihat
-        setActiveIndex(0); 
+        setName("");
+        setWish("");
+        setShowForm(false);
+        setActiveIndex(0);
         if (sliderRef.current) sliderRef.current.scrollLeft = 0;
     };
 
     return (
         <div className="guestbook-container">
-            <button onClick={() => setShowForm(true)} className="btn-open-form"> Tulis Ucapan / Wish</button>
+            <button onClick={() => setShowForm(true)} className="btn-open-form">
+                Tulis Ucapan / Wish
+            </button>
+
             {showForm && (
                 <div className="guestbook-form-overlay" onClick={() => setShowForm(false)}>
                     <form className="guestbook-form" onSubmit={sendWish} onClick={e => e.stopPropagation()}>
                         <h3>Tulis Ucapan Anda</h3>
-                        <input type="text" placeholder="Nama Penuh" value={name} onChange={e => setName(e.target.value)} required />
-                        <textarea placeholder="Tuliskan ucapan dan doa anda di sini..." value={wish} onChange={e => setWish(e.target.value)} required rows="4" />
-                        <button type="submit">Hantar Ucapan</button>
+                        <input value={name} onChange={e => setName(e.target.value)} placeholder="Nama Penuh" required />
+                        <textarea value={wish} onChange={e => setWish(e.target.value)} placeholder="Ucapan & Doa..." rows="4" required />
+                        <button type="submit">Hantar</button>
                     </form>
                 </div>
             )}
-            
-            {/* Lampirkan sliderRef ke elemen div ini */}
-            <div className="guestbook-slider" ref={sliderRef}> 
-                {list.map(w => (
+
+            <div className="guestbook-slider" ref={sliderRef}>
+                {list.map((w) => (
                     <div key={w.id} className="guestbook-card">
-                        <p className="guestbook-message">"{w.wish}"</p>
-                        <p className="guestbook-author">- {w.name}</p>
+                        <p>"{w.wish}"</p>
+                        <small>- {w.name}</small>
                     </div>
                 ))}
             </div>
-            {/* Tambah fallback jika tiada ucapan */}
-            {list.length === 0 && <p style={{fontStyle: 'italic', color: '#888'}}>Belum ada ucapan. Jadilah yang pertama!</p>}
+
+            {list.length === 0 && <p style={{ fontStyle:"italic", color:"#888" }}>Belum ada ucapan. Jadilah yang pertama!</p>}
+        </div>
+    );
+
+    
+}
+
+// =================== CONTACT MODAL ===================
+function ContactModal({ isOpen, onClose, contactMale, contactFemale, nameMale, nameFemale }) {
+    if (!isOpen) return null;
+
+    return (
+        <div className="guestbook-form-overlay" onClick={onClose}>
+            <div className="guestbook-form" onClick={e => e.stopPropagation()}>
+                <h3>Hubungi Pengantin</h3>
+
+                <div className="contact-group">
+                    <p className="contact-label">Pihak Lelaki:</p>
+                    <div className="contact-item">
+                        <a href={`https://wa.me/${contactMale}`} target="_blank" rel="noreferrer">
+                            {nameMale} <span>📱</span>
+                        </a>
+                        <span>{contactMale}</span>
+                    </div>
+                </div>
+
+                <div className="contact-group">
+                    <p className="contact-label">Pihak Perempuan:</p>
+                    <div className="contact-item">
+                        <a href={`https://wa.me/${contactFemale}`} target="_blank" rel="noreferrer">
+                            {nameFemale} <span>📱</span>
+                        </a>
+                        <span>{contactFemale}</span>
+                    </div>
+                </div>
+
+                <button onClick={onClose}>Tutup</button>
+            </div>
         </div>
     );
 }
-// ===== Main App (Lengkap) =====
+
+// =================== LOCATION MODAL ===================
+function LocationModal({ isOpen, onClose, address }) {
+    if (!isOpen) return null;
+
+    return (
+       <div className="guestbook-form-overlay" onClick={onClose}>
+    <div className="guestbook-form" onClick={e => e.stopPropagation()}>
+        <h3 style={{ color: "#000", fontWeight: "700" }}>Laman Pengantin</h3>
+        <p style={{ color: "#000", fontWeight: "500" }}>{address}</p>
+        <a 
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`} 
+            target="_blank" 
+            rel="noreferrer"
+            style={{ color: "#25D366", fontWeight: "500" }}
+        >
+            📍 Buka di Google Maps
+        </a>
+        <br /><br />
+        <button onClick={onClose}>Tutup</button>
+    </div>
+</div>
+
+
+    );
+}
+
+// =================== COUNTDOWN ===================
+function Countdown({ targetDate }) {
+    const [timeLeft, setTimeLeft] = useState({
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0
+    });
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const now = new Date();
+            const diff = targetDate - now;
+
+            if (diff <= 0) {
+                setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+                clearInterval(interval);
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            setTimeLeft({ days, hours, minutes, seconds });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [targetDate]);
+
+    return (
+        <section className="section section-countdown">
+            <h2 className="metallic--text">Hari Menuju Majlis</h2>
+            <div className="countdown-cards">
+                <div className="countdown-card">
+                    <span>{timeLeft.days}</span>
+                    <small>Hari</small>
+                </div>
+                <div className="countdown-card">
+                    <span>{timeLeft.hours}</span>
+                    <small>Jam</small>
+                </div>
+                <div className="countdown-card">
+                    <span>{timeLeft.minutes}</span>
+                    <small>Minit</small>
+                </div>
+                <div className="countdown-card">
+                    <span>{timeLeft.seconds}</span>
+                    <small>Saat</small>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+
+// =================== FAB MENU ===================
+function ActionMenu({ toggleMusic, isPlaying, onOpenContactModal, onOpenLocationModal }) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div className={`fab-menu-container ${isOpen ? 'open' : ''}`}>
+            <button onClick={toggleMusic} className="fab-action-button music-btn">
+                {isPlaying ? "♪" : "🔇"}
+            </button>
+
+            <button className="fab-action-button location-btn" onClick={() => { onOpenLocationModal(); setIsOpen(false); }}>
+                📍
+            </button>
+
+            <button className="fab-action-button contact-btn" onClick={() => { onOpenContactModal(); setIsOpen(false); }}>
+                📞
+            </button>
+
+            <button className="fab-main-button" onClick={() => setIsOpen(!isOpen)}>
+                {isOpen ? "❌" : "☰"}
+            </button>
+        </div>
+    );
+}
+
+// =================== MAIN APP ===================
 export default function App() {
     const [showWelcome, setShowWelcome] = useState(true);
     const audioRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [isContactModalOpen, setIsContactModalOpen] = useState(false); 
+    const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
-    // --- LOGIK SCROLL REVEAL MENGGUNAKAN IntersectionObserver ---
-    useEffect(() => {
-        // Hanya jalankan observer apabila Welcome Screen hilang
-        if (showWelcome) return;
-        
-        const sections = document.querySelectorAll('.section');
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // Tambah kelas untuk mencetuskan CSS transition
-                    entry.target.classList.add('is-visible'); 
-                    observer.unobserve(entry.target); // Hentikan pemerhatian selepas muncul
-                }
-            });
-        }, {
-            // threshold: 0.1 bermakna seksyen akan muncul apabila 10% daripadanya kelihatan
-            threshold: 0.1 
-        });
+    const weddingAddress = "F271, Jalan Terusan, Simpang 5, 34300 Parit Buntar, Perak";
+    const contactMale = "601112367384";
+    const nameMale = "Azzam";
+    const contactFemale = "601124186129";
+    const nameFemale = "Amir";
 
-        sections.forEach(section => {
-            observer.observe(section);
-        });
-
-        // Cleanup function (penting untuk React)
-        return () => observer.disconnect();
-    }, [showWelcome]); // Jalankan kesan ini setiap kali showWelcome berubah
-
-    // --- LOGIK KAWALAN MUZIK ---
     const toggleMusic = () => {
-        if (isPlaying) {
-            audioRef.current.pause();
-        } else {
-            audioRef.current.play().catch(error => console.log("Music auto-play blocked:", error));
-        }
+        if (!audioRef.current) return;
+        if (isPlaying) audioRef.current.pause();
+        else audioRef.current.play().catch(() => {});
         setIsPlaying(!isPlaying);
     };
-    
-    // --- LOGIK BUKA KAD JEMPUTAN (Mula Muzik) ---
+
     const handleOpenInvitation = () => {
         setShowWelcome(false);
-        // Cuba mainkan muzik sebaik sahaja pengguna berinteraksi
-        audioRef.current.play().catch(error => {
-            console.log("Music play failed after click, user will need to use button:", error);
-        });
+        audioRef.current?.play().catch(() => {});
         setIsPlaying(true);
     };
 
- 
-// Pastikan anda import useState jika anda belum lakukannya di bahagian atas fail App.jsx
-
-// --- Fungsi Butang Aksi Utama (Menu Terapung) ---
-function ActionMenu({ toggleMusic, isPlaying }) {
-    const [isOpen, setIsOpen] = useState(false); // State mengawal menu utama (☰ / ❌)
-    const [showContactChoices, setShowContactChoices] = useState(false); // State mengawal pilihan Contact (📞 / 🤵👰)
-
-    // Nombor Contact Baharu (DIPERLUKAN: Kod Negara 60, tanpa tanda hubung)
-    const contactMale = "601112367384"; // Azzam (Lelaki)
-    const contactFemale = "601124186129"; // Amir (Perempuan)
-    
-    // Gantikan dengan URL yang sebenar
-    const locationLink = "https://maps.app.goo.gl/fcuVpxMMyqGbbtxr9"; 
-    const giftLink = "https://www.maybank2u.com.my/account-details"; 
-    
-    // Fungsi untuk menutup menu contact apabila menu utama dibuka/ditutup
-    const toggleMenu = () => {
-        setIsOpen(!isOpen);
-        if (isOpen) {
-            // Tutup contact choices apabila menu utama ditutup
-            setShowContactChoices(false); 
-        }
-    };
-
-    return (
-        <div className={`fab-menu-container ${isOpen ? 'open' : ''}`}>
-            
-            {/* Butang Aksi Kecil (di sebelah kiri butang utama) */}
-
-            {/* Butang Mute/Unmute Lagu */}
-            <button 
-                onClick={toggleMusic} 
-                className="fab-action-button music-btn"
-                aria-label={isPlaying ? "Mute Music" : "Unmute Music"}
-            >
-                {isPlaying ? "♪" : "🔇"}
-            </button>
-            
-            {/* Butang Hadiah/E-Angpau */}
-            <a href={giftLink} target="_blank" rel="noopener noreferrer" className="fab-action-button gift-btn">
-                🎁
-            </a>
-            
-            {/* Butang Lokasi/Maps */}
-            <a href={locationLink} target="_blank" rel="noopener noreferrer" className="fab-action-button location-btn">
-                📍
-            </a>
-
-            {/* --- BUTANG CONTACT BARU --- */}
-            
-            {/* 1. Butang Contact Pihak Lelaki (Azzam) - Tampil apabila showContactChoices = true */}
-            <a 
-                href={`https://wa.me/${contactMale}`} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className={`fab-action-button contact-male-btn ${showContactChoices ? 'show-choice' : ''}`}
-                title="Pihak Lelaki (Azzam)"
-            >
-                🤵
-            </a>
-            
-            {/* 2. Butang Contact Pihak Perempuan (Amir) - Tampil apabila showContactChoices = true */}
-            <a 
-                href={`https://wa.me/${contactFemale}`} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className={`fab-action-button contact-female-btn ${showContactChoices ? 'show-choice' : ''}`}
-                title="Pihak Perempuan (Amir)"
-            >
-                👰
-            </a>
-            
-            {/* 3. Butang Contact Induk (Toggle Pilihan 📞) - SENTIASA TAMPIL apabila Menu Utama terbuka */}
-            <button 
-                className="fab-action-button contact-btn"
-                onClick={(e) => {
-                    e.preventDefault(); 
-                    if (isOpen) { // Hanya berfungsi apabila menu utama terbuka
-                        setShowContactChoices(!showContactChoices);
-                    }
-                }}
-            >
-                📞
-            </button>
-            {/* ----------------------------- */}
-
-            {/* Butang Utama (Toggle Menu ☰ / ❌) */}
-            <button 
-                className="fab-main-button" 
-                onClick={toggleMenu}
-                aria-label="Open Action Menu"
-            >
-                {isOpen ? '❌' : '☰'} 
-            </button>
-        </div>
-    );
-}
-
+    useEffect(() => {
+        if (showWelcome) return;
+        const observer = new IntersectionObserver(
+            entries => entries.forEach(e => e.isIntersecting && e.target.classList.add("is-visible")),
+            { threshold: 0.1 }
+        );
+        document.querySelectorAll(".section").forEach(s => observer.observe(s));
+        return () => observer.disconnect();
+    }, [showWelcome]);
 
     return (
         <div className="app">
-            {/* Audio - Sumber fail dari folder public */}
-            <audio 
-                ref={audioRef} 
-                src="/music.mp3" 
-                loop 
-                preload="auto" 
-            />
+            <audio ref={audioRef} src="/music.mp3" loop preload="auto" />
 
-            {/* Welcome Screen */}
-            {showWelcome && (
+            {showWelcome ? (
                 <div className="welcome-screen" style={{ backgroundImage: `url(${wallpaper})` }}>
                     <span className="welcome-tagline">Walimatulurus</span>
                     <h1>Iman & Arfah</h1>
                     <p>Meraikan cinta pada Sabtu, 17 Januari 2026</p>
-                    <button onClick={handleOpenInvitation}className="shiny-gold-btn" 
-    style={{ position: 'relative', zIndex: 2 }}>💌 Buka Kad Jemputan</button>
+                    <button onClick={handleOpenInvitation} className="shiny-gold-btn">💌 Buka Kad Jemputan</button>
                 </div>
+            ) : (
+                <>
+                    <section className="section section-jemputan section-bg-overlay">
+                        <div className="section-content">
+                            <h2 className="metallic-gold-text">Jemputan Khas</h2>
+                            <p>
+                                Dengan izin Allah dan penuh kesyukuran, kami sekeluarga ingin menjemput tuan/puan ke majlis walimatulurus anak kami, bagi memeriahkan hari bahagia ini dan berkongsi kegembiraan bersama-sama.
+                            </p>
+                        </div>
+                    </section>
+
+                    <section className="section section-time">
+                        <h2>Aturcara Majlis</h2>
+                        <p>Laman Pengantin Titi Serong</p>
+                        <p>11:00 AM - Ketibaan Tetamu</p>
+                        <p>12:30 PM - Perarakan Pengantin</p>
+                        <p>01:00 PM - Jamuan Makan</p>
+                        <p>04:00 PM - Majlis Berakhir</p>
+                    </section>
+
+                    <div className="classic-divider"><span>⚜️</span></div>
+
+                    <section className="section section-ucapan">
+                        <h2>Ucapan & Doa</h2>
+                        <p>Sila tinggalkan ucapan manis anda sebagai tanda ingatan dan doa restu buat kami.</p>
+                        <Guestbook />
+                    </section>
+
+                    <section className="section section-doa section-bg-overlay">
+                        <h2 className="metallic-gold-text">Doa Pengantin</h2>
+                        <p className="slow-fade-text"> Ya Allah, satukan hati mereka, kurniakan kebahagiaan, kesabaran, dan keberkatan dalam setiap langkah kehidupan bersama. Aamiin.</p>
+                    </section>
+
+
+<div className="classic-divider"><span>⚜️</span></div>
+{/* Tambah Countdown di sini */}
+<Countdown targetDate={new Date("2026-01-17T00:00:00")} />
+                    <div className="classic-divider"><span>⚜️</span></div>
+
+                    <footer className="app-footer">
+                        <p>#OfficiallyIA | Iman & Arfah</p>
+                    </footer>
+
+                    <ActionMenu
+                        toggleMusic={toggleMusic}
+                        isPlaying={isPlaying}
+                        onOpenContactModal={() => setIsContactModalOpen(true)}
+                        onOpenLocationModal={() => setIsLocationModalOpen(true)}
+                    />
+
+                    <ContactModal
+                        isOpen={isContactModalOpen}
+                        onClose={() => setIsContactModalOpen(false)}
+                        contactMale={contactMale}
+                        nameMale={nameMale}
+                        contactFemale={contactFemale}
+                        nameFemale={nameFemale}
+                    />
+
+                    <LocationModal
+                        isOpen={isLocationModalOpen}
+                        onClose={() => setIsLocationModalOpen(false)}
+                        address={weddingAddress}
+                    />
+                </>
             )}
-
-            {/* Main Content Sections */}
-    
-{!showWelcome && (
-    <>
-        <section className="section section-jemputan section-bg-overlay">
-            <h2 className="metallic-gold-text">Jemputan Khas</h2>
-            <p>Dengan penuh rasa kesyukuran, kami menjemput Dato'/Datin/Tuan/Puan ke majlis perkahwinan kami. Kehadiran anda adalah doa terindah buat kami.</p>
-        </section>
-
-        <section className="section section-time">
-            <h2>Aturcara Majlis</h2>
-            <p>Laman Pengantin Titi Serong</p>
-            <div style={{ maxWidth: '400px', margin: '0 auto' }}>
-                <p style={{ fontWeight: 'bold', borderBottom: '1px solid #ccc', paddingBottom: '5px' }}>Majlis Resepsi</p>
-                <p>11:00 AM - Ketibaan Tetamu</p>
-                <p>12:30 PM - Perarakan Masuk Pengantin</p>
-                <p>01:00 PM - Jamuan Makan Tengah Hari</p>
-                <p>04:00 PM - Majlis Berakhir</p>
-            </div>
-        </section>
-
-        {/* --- TAMBAH PEMBAHAGI KLASIK DI SINI --- */}
-                    <div className="classic-divider">
-                        <span className="divider-icon">⚜️</span> 
-                    </div>
-                    {/* ------------------------------------------ */}
-        
-        <section className="section section-ucapan">
-            <h2>Ucapan & Doa</h2>
-            <p>Sila tinggalkan ucapan manis anda sebagai tanda ingatan dan doa restu buat kami.</p>
-            <Guestbook />
-        </section>
-
-        {/* --- 1. SEKSYEN DO'A KINI BERADA DI ATAS --- */}
-        <section className="section section-doa section-bg-overlay">
-            <h2 className="metallic-gold-text">Doa Pengantin</h2>
-            
-            {/* Tukar kepada kelas fade-in yang baru, buang data-text */}
-            <p className="slow-fade-text">
-                Ya Allah, satukan hati mereka, kurniakan kebahagiaan, kesabaran, dan keberkatan dalam setiap langkah kehidupan bersama. Aamiin.
-            </p>
-           
-        </section>
-        {/* ------------------------------------------------------------------- */}
-
-        {/* --- 2. SEKSYEN AYAT AL-QURAN KINI BERADA DI BAWAH --- */}
-<section className="section section-ayat">
-    <p className="arabic-text">وَخَلَقْنَاكُمْ أَزْوَاجًا</p>
-    <p className="malay-text">"Dan Kami menciptakan kamu berpasang-pasangan,"</p>
-    <p className="reference-text">(Surah An-Naba': 8)</p>
-</section>
-{/* -------------------------------------------------------- */}
-
-{/* ===== FOOTER DENGAN HASHTAG ===== */}
-<footer className="app-footer">
-    <p>#OfficiallyIA | Walimatulurus Iman & Arfah</p>
-</footer>
-{/* ================================== */}
-        
-    </>
-)}
-
-            {/* Floating Action Menu */}
-            {!showWelcome && <ActionMenu toggleMusic={toggleMusic} isPlaying={isPlaying} />}
         </div>
-        
     );
 }
