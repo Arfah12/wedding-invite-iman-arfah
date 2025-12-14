@@ -16,6 +16,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// =================== UTILITY FUNCTIONS ===================
+function truncateWords(text, limit = 10) {
+    const words = text.split(" ");
+    if (words.length <= limit) return text;
+    return words.slice(0, limit).join(" ") + "...";
+}
+
 // =================== GUESTBOOK ===================
 function Guestbook() {
     const sliderRef = useRef(null);
@@ -25,7 +32,12 @@ function Guestbook() {
     const [showForm, setShowForm] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
 
-    // Listen to Firestore
+    // 🔥 POPUP STATE
+    const [selectedWish, setSelectedWish] = useState(null);
+    const [showThanksPopup, setShowThanksPopup] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // ================= FIRESTORE LISTENER =================
     useEffect(() => {
         const q = query(collection(db, "wishes"), orderBy("timestamp", "desc"));
         const unsub = onSnapshot(q, snapshot => {
@@ -38,66 +50,146 @@ function Guestbook() {
         return () => unsub();
     }, []);
 
-    // Slider autoplay
+    // ================= SLIDER AUTOPLAY =================
     useEffect(() => {
         if (!list.length) return;
         const interval = setInterval(() => {
             setActiveIndex(prev => {
                 const next = (prev + 1) % list.length;
-                if (sliderRef.current) sliderRef.current.scrollLeft = next * 300;
+                if (sliderRef.current) {
+                    sliderRef.current.scrollLeft = next * 300;
+                }
                 return next;
             });
         }, 5000);
         return () => clearInterval(interval);
     }, [list]);
 
+    // ================= SEND WISH =================
     const sendWish = async e => {
         e.preventDefault();
         if (!name.trim() || !wish.trim()) return;
-        await addDoc(collection(db, "wishes"), {
-            name: name.trim(),
-            wish: wish.trim(),
-            timestamp: serverTimestamp()
-        });
-        setName("");
-        setWish("");
-        setShowForm(false);
-        setActiveIndex(0);
-        if (sliderRef.current) sliderRef.current.scrollLeft = 0;
+
+        setIsLoading(true); // start loading
+        try {
+            await addDoc(collection(db, "wishes"), {
+                name: name.trim(),
+                wish: wish.trim(),
+                timestamp: serverTimestamp()
+            });
+
+            // reset form
+            setName("");
+            setWish("");
+            setShowForm(false);
+
+            // show thank you popup
+            setShowThanksPopup(true);
+            setTimeout(() => setShowThanksPopup(false), 3000);
+
+            // scroll slider ke awal
+            setActiveIndex(0);
+            if (sliderRef.current) sliderRef.current.scrollLeft = 0;
+        } catch (err) {
+            console.error("Gagal hantar ucapan:", err);
+            alert("Maaf, ucapan tidak dapat dihantar. Sila cuba lagi.");
+        } finally {
+            setIsLoading(false); // stop loading
+        }
     };
 
     return (
         <div className="guestbook-container">
+
+            {/* ===== BUTTON OPEN FORM ===== */}
             <button onClick={() => setShowForm(true)} className="btn-open-form">
                 Tulis Ucapan / Wish
             </button>
 
+            {/* ===== FORM POPUP ===== */}
             {showForm && (
                 <div className="guestbook-form-overlay" onClick={() => setShowForm(false)}>
-                    <form className="guestbook-form" onSubmit={sendWish} onClick={e => e.stopPropagation()}>
+                    <form
+                        className="guestbook-form"
+                        onSubmit={sendWish}
+                        onClick={e => e.stopPropagation()}
+                    >
                         <h3>Tulis Ucapan Anda</h3>
-                        <input value={name} onChange={e => setName(e.target.value)} placeholder="Nama Penuh" required />
-                        <textarea value={wish} onChange={e => setWish(e.target.value)} placeholder="Ucapan & Doa..." rows="4" required />
-                        <button type="submit">Hantar</button>
+                        <input
+                            value={name}
+                            onChange={e => setName(e.target.value)}
+                            placeholder="Nama Penuh"
+                            required
+                        />
+                        <textarea
+                            value={wish}
+                            onChange={e => setWish(e.target.value)}
+                            placeholder="Ucapan & Doa..."
+                            rows="4"
+                            required
+                        />
+                        <button type="submit" disabled={isLoading}>
+                            {isLoading ? "Sedang menghantar..." : "Hantar"}
+                        </button>
                     </form>
                 </div>
             )}
 
+            {/* ===== THANK YOU POPUP ===== */}
+            {showThanksPopup && (
+                <div className="guestbook-form-overlay">
+                    <div className="guestbook-form">
+                        <h3>Terima Kasih atas ucapan & doa ❤️</h3>
+                    </div>
+                </div>
+            )}
+
+            {/* ===== SLIDER ===== */}
             <div className="guestbook-slider" ref={sliderRef}>
-                {list.map((w) => (
+                {list.map(w => (
                     <div key={w.id} className="guestbook-card">
-                        <p>"{w.wish}"</p>
-                        <small>- {w.name}</small>
+                        <p className="guestbook-message">
+                            "{truncateWords(w.wish, 10)}"
+                            {w.wish.split(" ").length > 10 && (
+                                <span
+                                    className="read-more"
+                                    onClick={() => setSelectedWish(w)}
+                                >
+                                    (baca penuh)
+                                </span>
+                            )}
+                        </p>
+                        <small className="guestbook-author">- {w.name}</small>
                     </div>
                 ))}
             </div>
 
-            {list.length === 0 && <p style={{ fontStyle:"italic", color:"#888" }}>Belum ada ucapan. Jadilah yang pertama!</p>}
+            {/* ===== EMPTY STATE ===== */}
+            {list.length === 0 && (
+                <p style={{ fontStyle: "italic", color: "#888" }}>
+                    Belum ada ucapan. Jadilah yang pertama!
+                </p>
+            )}
+
+            {/* ===== FULL WISH POPUP ===== */}
+            {selectedWish && (
+                <div className="guestbook-form-overlay" onClick={() => setSelectedWish(null)}>
+                    <div className="guestbook-form" onClick={e => e.stopPropagation()}>
+                        <h3 style={{ color: "#800020" }}>Ucapan Tetamu</h3>
+                        <p style={{ fontStyle: "italic", lineHeight: "1.8", marginBottom: "20px", color: "#333" }}>
+                            "{selectedWish.wish}"
+                        </p>
+                        <p style={{ textAlign: "right", fontWeight: "700", color: "#800020" }}>
+                            – {selectedWish.name}
+                        </p>
+                        <button onClick={() => setSelectedWish(null)}>Tutup</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
-
-    
 }
+
 
 // =================== CONTACT MODAL ===================
 function ContactModal({ isOpen, onClose, contactMale, contactFemale, nameMale, nameFemale }) {
