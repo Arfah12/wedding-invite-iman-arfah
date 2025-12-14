@@ -404,16 +404,19 @@ export default function App() {
 
                     <div className="classic-divider"><span>⚜️</span></div>
 
+
+<section className="section section-doa section-bg-overlay">
+                        <h2 className="metallic-gold-text">Doa Pengantin</h2>
+                        <p className="slow-fade-text"> Ya Allah, satukanlah hati kedua mempelai ini dengan kasih sayang-Mu, limpahkan keberkatan dalam rumah tangga mereka, dan kurniakanlah zuriat yang soleh serta kebahagiaan hingga ke akhirat. Aamiin.</p>
+                    </section> 
+
                     <section className="section section-ucapan">
                         <h2>Ucapan & Doa</h2>
                         <p>Sila tinggalkan ucapan manis anda sebagai tanda ingatan dan doa restu buat kami.</p>
                         <Guestbook />
                     </section>
 
-                    <section className="section section-doa section-bg-overlay">
-                        <h2 className="metallic-gold-text">Doa Pengantin</h2>
-                        <p className="slow-fade-text"> Ya Allah, satukan hati mereka, kurniakan kebahagiaan, kesabaran, dan keberkatan dalam setiap langkah kehidupan bersama. Aamiin.</p>
-                    </section>
+                    
 
 
 <div className="classic-divider"><span>⚜️</span></div>
